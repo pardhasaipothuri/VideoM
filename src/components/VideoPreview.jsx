@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import {Film} from 'lucide-react';
 import {animationStyle} from '../engine/animation';
 export default function VideoPreview({scenes,settings,selectedId,onSelect,music}){const [playing,setPlaying]=useState(false); const [time,setTime]=useState(0); const audioRef=useRef(null); const musicRef=useRef(null); const startRef=useRef(0); const raf=useRef(); const total=scenes.reduce((a,s)=>a+s.duration,0); const currentIndex=(()=>{let x=0;for(let i=0;i<scenes.length;i++){if(time<x+scenes[i].duration)return i;x+=scenes[i].duration}return Math.max(0,scenes.length-1)})(); const scene=scenes[currentIndex]; let before=0; for(let i=0;i<currentIndex;i++)before+=scenes[i].duration; const progress=scene?Math.min(1,Math.max(0,(time-before)/scene.duration)):0;
  useEffect(()=>{if(!playing){cancelAnimationFrame(raf.current);return} startRef.current=performance.now()-time*1000; const tick=now=>{const t=(now-startRef.current)/1000;if(t>=total){setTime(total);setPlaying(false);return} setTime(t);raf.current=requestAnimationFrame(tick)};raf.current=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf.current)},[playing,total]);
